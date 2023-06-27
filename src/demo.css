@@ -1,0 +1,14 @@
+.demo{
+  width: 800px;
+}
+.demo .send-msg, .demo .receive-msg{
+  width: 100%;
+  display: flex;
+  margin-top: 40px;
+}
+
+.title{
+  display: inline-block;
+  width: 100px;
+  text-align: left;
+}
