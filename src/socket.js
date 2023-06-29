@@ -1,4 +1,4 @@
-let socket = new WebSocket("ws://192.168.153.143:8080/websocket/" + Math.random().toString());
+let socket = new WebSocket("ws://xxx/websocket/" + Math.random().toString());
 
 socket.onopen = function(){
   console.log("websocket已连接");

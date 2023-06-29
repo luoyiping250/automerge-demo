@@ -22,7 +22,8 @@ function RichEditor({text, onChange}) {
         // 修改 uploadImage 菜单配置
         MENU_CONF: {
             uploadImage: {
-                server: 'xxxx/aaa'
+                server: '/image/upload',
+                fieldName: 'file',
             }
         }
     }

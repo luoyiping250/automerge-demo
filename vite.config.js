@@ -19,5 +19,16 @@ export default defineConfig({
       // wrapper has a module level variable to track JS side heap
       // allocations, initializing this twice causes horrible breakage
       exclude: ["@automerge/automerge-wasm"]
+  },
+
+  server: {
+    proxy: {
+      // 接口地址代理
+      '/image': {
+        target: 'http://xxxx', // 接口的域名
+        changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
+        // rewrite: path => path.replace(/^\/demo/, '/demo')
+      },
+    }
   }
 })
