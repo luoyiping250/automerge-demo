@@ -66,14 +66,22 @@ function Demo() {
 
   return (
     <div className='demo'>
-      <RichEditor text={doc?.text?.[0]?.toJSON()}
-        onChange={(value) => {
-          const oldTxt = docRef.current?.text?.[0]?.toJSON();
-          if(value !== oldTxt){
-            handleDocChange(value);
-          }
-        }}
-      />
+      <div>
+        <h2>文档编辑：</h2>
+        <RichEditor text={doc?.text?.[0]?.toJSON()}
+          onChange={(value) => {
+            const oldTxt = docRef.current?.text?.[0]?.toJSON();
+            if(value !== oldTxt){
+              handleDocChange(value);
+            }
+          }}
+        />
+      </div>
+
+      <div style={{ marginTop: '15px' }}>
+        <h3>文档字符串：</h3>
+        {doc?.text?.[0]?.toJSON()}
+      </div>
     </div>
   )
 }

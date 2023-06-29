@@ -54,9 +54,6 @@ function RichEditor({text, onChange}) {
                     style={{ minHeight: 800, overflowY: 'hidden' }}
                 />
             </div>
-            <div style={{ marginTop: '15px' }}>
-                {text}
-            </div>
         </>
     )
 }
