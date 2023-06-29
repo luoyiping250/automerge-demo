@@ -4,7 +4,7 @@ import Demo from './Demo'
 
 function App() {
   return (
-    <div id='app'>
+    <div style={{width: '100%', height: '100%'}}>
       <Demo/>
     </div>
   )
