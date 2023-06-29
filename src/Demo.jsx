@@ -7,9 +7,9 @@ import RichEditor from './components/RichEditor';
 
 
 function Demo() {
-  const [docContent, setDocContent] = useState(null);
   // 初始化文本对象
-  let doc = useRef(Automerge.init());
+  const [doc, setDoc] = useState(Automerge.init());
+  let docRef = useRef(doc);
 
   useEffect(() => { 
     handleSocketMsg();
@@ -31,26 +31,24 @@ function Demo() {
         changes[0] = changesUnit8;
 
         // 解析文档内容更新
-        let [newDoc] = Automerge.applyChanges(Automerge.clone(doc.current), changes);
-        const newMsg = newDoc.text[0]?.toJSON();
-        setDocContent(newMsg);
+        let [newDoc] = Automerge.applyChanges(Automerge.clone(doc), changes);
 
         // 更新文档对象
-        doc.current = newDoc;
+        setDoc(newDoc)
+        docRef.current = newDoc;
        }
      }
     };
   }
 
   const handleDocChange = (newContent) => {
-    setDocContent(newContent)
-    let newDoc = Automerge.change(Automerge.clone(doc.current), d => {
+    let newDoc = Automerge.change(Automerge.clone(doc), d => {
       // 设置文本初始内容
         d.text = [new Automerge.Text(newContent)];
     })
 
     // 获取文档内容变化
-    let changes = Automerge.getChanges(doc.current, newDoc);
+    let changes = Automerge.getChanges(doc, newDoc);
 
     // 通知changes
     if(changes?.length > 0){
@@ -62,14 +60,18 @@ function Demo() {
     }
 
     // 更新文档对象
-    doc.current = newDoc;
+    setDoc(newDoc)
+    docRef.current = newDoc;
   }
 
   return (
     <div className='demo'>
-      <RichEditor value={docContent}
+      <RichEditor text={doc?.text?.[0]?.toJSON()}
         onChange={(value) => {
-          handleDocChange(value);
+          const oldTxt = docRef.current?.text?.[0]?.toJSON();
+          if(value !== oldTxt){
+            handleDocChange(value);
+          }
         }}
       />
     </div>

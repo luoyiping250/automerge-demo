@@ -6,7 +6,7 @@ import { Boot } from '@wangeditor/editor'
 import markdownModule from '@wangeditor/plugin-md'
 
 
-function RichEditor({value, onChange}) {
+function RichEditor({text, onChange}) {
     // editor 实例
     const [editor, setEditor] = useState(null)                   // JS 语法
 
@@ -47,7 +47,7 @@ function RichEditor({value, onChange}) {
                 />
                 <Editor
                     defaultConfig={editorConfig}
-                    value={value}
+                    value={text}
                     onCreated={setEditor}
                     onChange={editor => onChange && onChange(editor.getHtml())}
                     mode="default"
@@ -55,7 +55,7 @@ function RichEditor({value, onChange}) {
                 />
             </div>
             <div style={{ marginTop: '15px' }}>
-                {value}
+                {text}
             </div>
         </>
     )
