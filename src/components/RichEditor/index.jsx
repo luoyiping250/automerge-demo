@@ -6,7 +6,7 @@ import { Boot } from '@wangeditor/editor'
 import markdownModule from '@wangeditor/plugin-md'
 
 
-function RichEditor({text, onChange}) {
+function RichEditor({text, onChange, height}) {
     // editor 实例
     const [editor, setEditor] = useState(null)                   // JS 语法
 
@@ -52,7 +52,7 @@ function RichEditor({text, onChange}) {
                     onCreated={setEditor}
                     onChange={editor => onChange && onChange(editor.getHtml())}
                     mode="default"
-                    style={{ minHeight: 800, overflowY: 'hidden' }}
+                    style={{ minHeight: 800, overflowY: 'hidden', height }}
                 />
             </div>
         </>

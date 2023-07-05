@@ -67,7 +67,7 @@ function Demo() {
   return (
     <div className='demo'>
       <div>
-        <h2>文档编辑：</h2>
+        <h3>编辑器：</h3>
         <RichEditor text={doc?.text?.[0]?.toJSON()}
           onChange={(value) => {
             const oldTxt = docRef.current?.text?.[0]?.toJSON();
@@ -75,6 +75,7 @@ function Demo() {
               handleDocChange(value);
             }
           }}
+          height={1000}
         />
       </div>
 
