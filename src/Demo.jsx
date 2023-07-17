@@ -1,9 +1,12 @@
+/* eslint-disable no-debugger */
 import { useEffect, useState, useRef } from 'react'
 import './App.css'
 import * as Automerge from '@automerge/automerge'
 import socket from './socket';
 import './demo.css';
 import RichEditor from './components/RichEditor';
+import axios from 'axios';
+import { toUint8Array, fromUint8Array } from 'js-base64';
 
 
 function Demo() {
@@ -12,8 +15,19 @@ function Demo() {
   let docRef = useRef(doc);
 
   useEffect(() => { 
+    loadDoc();
     handleSocketMsg();
   }, [])
+
+  const loadDoc = () => {
+    axios.get('/doc?id=22').then(res => {
+      const data = res.data?.data;
+      const docUnit8 = toUint8Array(data);
+      const loadedDoc = Automerge.load(docUnit8);
+      setDoc(loadedDoc);
+      docRef.current = loadedDoc
+    })
+  }
 
   const handleSocketMsg = () => {
     // 监听文档更新消息
@@ -25,13 +39,14 @@ function Demo() {
        let msg = msgStr && JSON.parse(msgStr);
        const {type, changes} = msg;
        if(type == 'update' && changes){
-        // 特殊处理：将普通数组changes转为Uint8Array
-        changes[0].length = Object.keys(changes[0])?.length;
-        const changesUnit8 = new Uint8Array(Array.from(changes[0]));
-        changes[0] = changesUnit8;
+        // 特殊处理：base64 string的changes转为Uint8Array
+        const changesUnit8 = [];
+        changes?.forEach(change => {
+          changesUnit8.push(toUint8Array(change));
+        })
 
         // 解析文档内容更新
-        let [newDoc] = Automerge.applyChanges(Automerge.clone(doc), changes);
+        let [newDoc, patch] = Automerge.applyChanges(Automerge.clone(doc), changesUnit8);
 
         // 更新文档对象
         setDoc(newDoc)
@@ -44,17 +59,21 @@ function Demo() {
   const handleDocChange = (newContent) => {
     let newDoc = Automerge.change(Automerge.clone(doc), d => {
       // 设置文本初始内容
-        d.text = [new Automerge.Text(newContent)];
+        d.text = newContent;
     })
 
     // 获取文档内容变化
     let changes = Automerge.getChanges(doc, newDoc);
 
-    // 通知changes
+    // 通知changes，将unit8Array转为Base64 string
+    const changesBase64 = [];
+    changes.forEach((change) => {
+      changesBase64.push(fromUint8Array(change))
+    })
     if(changes?.length > 0){
       const msg = {
         type: 'update',
-        changes: changes
+        changes: changesBase64
       };
       socket.send(msg ? JSON.stringify(msg) : msg);
     }
@@ -71,7 +90,7 @@ function Demo() {
         <RichEditor text={doc?.text?.[0]?.toJSON()}
           onChange={(value) => {
             const oldTxt = docRef.current?.text?.[0]?.toJSON();
-            if(value !== oldTxt){
+            if(value !== oldTxt && value !== '<p><br></p>'){
               handleDocChange(value);
             }
           }}
