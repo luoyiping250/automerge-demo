@@ -1,5 +1,4 @@
-/* eslint-disable no-debugger */
-import { useEffect, useState, useRef } from 'react'
+import React from 'react';
 import './App.css'
 import * as Automerge from '@automerge/automerge'
 import socket from './socket';
@@ -9,27 +8,36 @@ import axios from 'axios';
 import { toUint8Array, fromUint8Array } from 'js-base64';
 
 
-function Demo() {
+export default class Demo extends React.Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      doc: Automerge.init()
+    }
+  }
   // 初始化文本对象
-  const [doc, setDoc] = useState(Automerge.init());
-  let docRef = useRef(doc);
+  docRef = React.createRef();
 
-  useEffect(() => { 
-    loadDoc();
-    handleSocketMsg();
-  }, [])
+  componentDidMount(){
+    this.loadDoc();
+    this.handleSocketMsg();
+  }
 
-  const loadDoc = () => {
+  loadDoc = () => {
     axios.get('/doc?id=22').then(res => {
       const data = res.data?.data;
       const docUnit8 = toUint8Array(data);
       const loadedDoc = Automerge.load(docUnit8);
-      setDoc(loadedDoc);
-      docRef.current = loadedDoc
+      this.setState(
+        {
+        doc: loadedDoc
+        }
+      );
+      this.docRef.current = loadedDoc
     })
   }
 
-  const handleSocketMsg = () => {
+  handleSocketMsg = () => {
     // 监听文档更新消息
     socket.onmessage = (event) => {
       const msgStr = event.data;
@@ -49,17 +57,22 @@ function Demo() {
         let [newDoc, patch] = Automerge.applyChanges(Automerge.clone(doc), changesUnit8);
 
         // 更新文档对象
-        setDoc(newDoc)
-        docRef.current = newDoc;
+        this.setState(
+          {
+          doc: newDoc
+          }
+        );
+        this.docRef.current = newDoc
        }
      }
     };
   }
 
-  const handleDocChange = (newContent) => {
+  handleDocChange = (newContent) => {
+    const {doc} = this.state;
     let newDoc = Automerge.change(Automerge.clone(doc), d => {
       // 设置文本初始内容
-        d.text = newContent;
+        d.text = new Automerge.Text(newContent);
     })
 
     // 获取文档内容变化
@@ -79,31 +92,37 @@ function Demo() {
     }
 
     // 更新文档对象
-    setDoc(newDoc)
-    docRef.current = newDoc;
+    this.setState(
+      {
+      doc: newDoc
+      }
+    );
+    this.docRef.current = newDoc
   }
 
-  return (
-    <div className='demo'>
-      <div>
-        <h3>编辑器：</h3>
-        <RichEditor text={doc?.text?.[0]?.toJSON()}
-          onChange={(value) => {
-            const oldTxt = docRef.current?.text?.[0]?.toJSON();
-            if(value !== oldTxt && value !== '<p><br></p>'){
-              handleDocChange(value);
-            }
-          }}
-          height={1000}
-        />
-      </div>
+  render(){
+    const {doc} = this.state;
 
-      <div style={{ marginTop: '15px' }}>
-        <h3>文档字符串：</h3>
-        {doc?.text?.[0]?.toJSON()}
+    return (
+      <div className='demo'>
+        <div>
+          <h3>编辑器：</h3>
+          <RichEditor text={doc?.text?.[0]?.toJSON()}
+            onChange={(value) => {
+              const oldTxt = this.docRef.current?.text?.[0]?.toJSON();
+              if(value !== oldTxt && value !== '<p><br></p>'){
+                this.handleDocChange(value);
+              }
+            }}
+            height={1000}
+          />
+        </div>
+  
+        <div style={{ marginTop: '15px' }}>
+          <h3>文档字符串：</h3>
+          {doc?.text?.[0]?.toJSON()}
+        </div>
       </div>
-    </div>
-  )
+    )
+  }
 }
-
-export default Demo

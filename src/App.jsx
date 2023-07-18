@@ -1,6 +1,6 @@
 import 'react'
 import './App.css'
-import Demo from './Demo'
+import Demo from '../dist/demo';
 
 function App() {
   return (
