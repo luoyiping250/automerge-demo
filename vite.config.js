@@ -10,9 +10,9 @@ export default defineConfig({
   plugins: [react(), topLevelAwait(), wasm()],
   build:{
     lib: {
-      entry: resolve(__dirname, './src/Demo.jsx'),
-      name: 'Demo',
-      fileName: 'demo',
+      entry: resolve(__dirname, './src/OnlineEditor.jsx'),
+      name: 'OnlineEditor',
+      fileName: 'OnlineEditor',
       formats: ['es']
     },
     rollupOptions: {
@@ -24,12 +24,12 @@ export default defineConfig({
     proxy: {
       // 接口地址代理
       '/image': {
-        target: 'http://xxxx:8080', // 接口的域名
+        target: 'http://xxx:8080', // 接口的域名
         changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
         // rewrite: path => path.replace(/^\/demo/, '/demo')
       },
       '/doc': {
-        target: 'http://xxxx:8080', // 接口的域名
+        target: 'http://xxx:8080', // 接口的域名
         changeOrigin: true, // 如果接口跨域，需要进行这个参数配置
       },
     }

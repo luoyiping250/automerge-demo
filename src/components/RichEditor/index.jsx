@@ -1,9 +1,11 @@
+/* eslint-disable react/prop-types */
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 
 import React, { useState, useEffect } from 'react'
 import { Editor, Toolbar } from '@wangeditor/editor-for-react'
 import { Boot } from '@wangeditor/editor'
 import markdownModule from '@wangeditor/plugin-md'
+import { Row, Col } from 'antd'
 
 
 function RichEditor({text, onChange, height}) {
@@ -46,14 +48,24 @@ function RichEditor({text, onChange, height}) {
                     mode="default"
                     style={{ borderBottom: '1px solid #ccc' }}
                 />
-                <Editor
-                    defaultConfig={editorConfig}
-                    value={text}
-                    onCreated={setEditor}
-                    onChange={editor => onChange && onChange(editor.getHtml())}
-                    mode="default"
-                    style={{ minHeight: 800, overflowY: 'hidden', height }}
-                />
+                <Row>
+                    <Col span={6}>
+                    文档大纲
+                    </Col>
+                    <Col span={16}>
+                        <Editor
+                        defaultConfig={editorConfig}
+                        value={text}
+                        onCreated={setEditor}
+                        onChange={editor => onChange && onChange(editor.getHtml())}
+                        mode="default"
+                        style={{ minHeight: 800, overflowY: 'hidden', height }}
+                    />
+                    </Col>
+                    <Col span={2}>
+                        右侧tab
+                    </Col>
+                </Row>
             </div>
         </>
     )

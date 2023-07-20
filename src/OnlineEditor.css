@@ -1,8 +1,8 @@
-.demo{
+.online-editor{
   width: 100%;
   height: 100%;
 }
-.demo .send-msg, .demo .receive-msg{
+.online-editor .send-msg, .online-editor .receive-msg{
   width: 100%;
   display: flex;
   margin-top: 40px;
