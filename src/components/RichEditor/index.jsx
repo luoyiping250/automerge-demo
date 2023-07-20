@@ -1,3 +1,4 @@
+/* eslint-disable no-unused-vars */
 /* eslint-disable react/prop-types */
 import '@wangeditor/editor/dist/css/style.css' // 引入 css
 
@@ -6,9 +7,11 @@ import { Editor, Toolbar } from '@wangeditor/editor-for-react'
 import { Boot } from '@wangeditor/editor'
 import markdownModule from '@wangeditor/plugin-md'
 import { Row, Col } from 'antd'
+import './index.css';
 
 
-function RichEditor({text, onChange, height}) {
+function RichEditor(props) {
+    const {text, onChange, uploadUrl} = props;
     // editor 实例
     const [editor, setEditor] = useState(null)                   // JS 语法
 
@@ -24,7 +27,7 @@ function RichEditor({text, onChange, height}) {
         // 修改 uploadImage 菜单配置
         MENU_CONF: {
             uploadImage: {
-                server: '/image/upload',
+                server: uploadUrl || '/image/upload',
                 fieldName: 'file',
             }
         }
@@ -41,28 +44,28 @@ function RichEditor({text, onChange, height}) {
 
     return (
         <>
-            <div style={{ border: '1px solid #ccc', zIndex: 100}}>
+            <div className='rich-editor'>
                 <Toolbar
                     editor={editor}
                     defaultConfig={toolbarConfig}
                     mode="default"
-                    style={{ borderBottom: '1px solid #ccc' }}
+                    className='rich-editor-toobar'
                 />
-                <Row>
-                    <Col span={6}>
+                <Row className='rich-editor-body'>
+                    <Col span={6} className='rich-editor-outline'>
                     文档大纲
                     </Col>
-                    <Col span={16}>
+                    <Col span={16} className='rich-editor-content'>
                         <Editor
                         defaultConfig={editorConfig}
                         value={text}
                         onCreated={setEditor}
                         onChange={editor => onChange && onChange(editor.getHtml())}
                         mode="default"
-                        style={{ minHeight: 800, overflowY: 'hidden', height }}
+                        style={{ minHeight: 800, overflowY: 'auto' }}
                     />
                     </Col>
-                    <Col span={2}>
+                    <Col span={2} className='rich-editor-right-tab'>
                         右侧tab
                     </Col>
                 </Row>

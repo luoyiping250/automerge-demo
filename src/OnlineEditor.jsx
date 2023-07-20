@@ -1,21 +1,44 @@
+/* eslint-disable react/prop-types */
 /* eslint-disable no-unused-vars */
 /* eslint-disable no-debugger */
 import { useEffect, useState, useRef } from 'react'
 import './App.css'
 import * as Automerge from '@automerge/automerge'
-import socket from './socket';
 import './OnlineEditor.css';
 import RichEditor from './components/RichEditor';
 import axios from 'axios';
 import { toUint8Array, fromUint8Array } from 'js-base64';
 
 
-function Demo() {
+function OnlineEditor(props) {
+  const {wsUrl} = props;
+
   // 初始化文本对象
   const [doc, setDoc] = useState(Automerge.init());
   let docRef = useRef(doc);
+  let socket;
+
+  const createSocket = () => {
+    socket = new WebSocket(`ws://${wsUrl|| ''}`);
+
+    socket.onopen = function(){
+      console.log("websocket已连接");
+    };
+
+    socket.onclose = function(){ 
+      console.log("websocket已关闭"); 
+    };
+
+    socket.onerror = function(error){ 
+      console.log("websocket错误：" + error); 
+      setTimeout(() => {
+        createSocket()
+      }, 10000);
+    };
+  }
 
   useEffect(() => { 
+    createSocket()
     loadDoc();
     handleSocketMsg();
   }, [])
@@ -87,16 +110,16 @@ function Demo() {
   return (
     <div className='online-editor'>
         <RichEditor text={doc?.text}
+          {...props}
           onChange={(value) => {
             const oldTxt = docRef.current?.text;
             if(value !== oldTxt && value !== '<p><br></p>'){
               handleDocChange(value);
             }
           }}
-          height={'100%'}
         />
     </div>
   )
 }
 
-export default Demo
+export default OnlineEditor
