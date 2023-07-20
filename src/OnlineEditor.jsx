@@ -19,7 +19,7 @@ function OnlineEditor(props) {
   let socket;
 
   const createSocket = () => {
-    socket = new WebSocket(`ws://${wsUrl|| ''}`);
+    socket = new WebSocket(wsUrl ? wsUrl : `wss://${location.host}`);
 
     socket.onopen = function(){
       console.log("websocket已连接");
